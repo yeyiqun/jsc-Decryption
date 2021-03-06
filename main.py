@@ -123,8 +123,9 @@ def batch_decrypt(srcDir, xxtea_key):
         exit(1)
     rootDir = os.path.split(srcDir)[0]
     outDir = rootDir
-    if outDir[-2:-1] != "\\":
+    if len(outDir)>0 and outDir[-2:-1] != "\\":
         outDir += "\\"
+
     outDir += "out\\"
     traveDir.deep_iterate_dir(srcDir)
     files_list = traveDir.getfileslist()
@@ -152,10 +153,15 @@ def main():
     instruct = sys.argv[1]
     xxtea_key = sys.argv[2]
     srcDir = sys.argv[3]
+    if len(xxtea_key)<16:
+        taillen=16-len(xxtea_key)
+        bxxtea_key=xxtea_key.encode().ljust(16,b'\0')
+    else:
+        bxxtea_key = xxtea_key.encode()[0:16]
     if instruct[1:2] == "d":
         show_banner()
 
-        batch_decrypt(srcDir=srcDir, xxtea_key=xxtea_key)
+        batch_decrypt(srcDir=srcDir, xxtea_key=bxxtea_key)
 
         ColorPrint.print_white_text("Running exit...\n")
 
